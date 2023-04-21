@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+function audit_subdomain {
+  local domain=$1
+  local subdomain=$2
+  local record_type=`dig $subdomain.$domain +short | awk '{print $2}'`
+  local destination=`dig $subdomain.$domain +short`
+
+  echo "The subdomain $subdomain is a $record_type record and points to $destination"
+}
+
+if [ -z "$1" ]; then
+  echo "Usage: $0 <domain> [<subdomain>]"
+  exit 1
+fi
+
+domain=$1
+
+if [ -z "$2" ]; then
+  audit_subdomain $domain www
+  audit_subdomain $domain lb-01
+  audit_subdomain $domain web-01
+  audit_subdomain $domain web-02
+else
+  subdomain=$2
+  audit_subdomain $domain $subdomain
+fi
